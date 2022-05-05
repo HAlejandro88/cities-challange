@@ -1,53 +1,56 @@
-const CitiesModel = require('../models/Cities.model')
-
+const CitiesModel = require('../models/Cities.model');
+const saveData = require('../helper/utils')
+const dataCities = require('../helper/data/cities-canada-usa.json')
 
 exports.getAllCities = async (req,res,next) => {
-    try {
-        const cities = await CitiesModel.find();
-        return res.status(200).json({
-            success: true,
-            count: cities.length,
-            data: cities
-        })
-    } catch (error) {
-        return  res.status(500).json({
-            success: false,
-            message: 'The serve has error, it is not possible to bring the data',
-            error
-        })
-    }
-}
+	try {
+		const cities = await CitiesModel.find();
+		return res.status(200).json({
+			success: true,
+			count: cities.length,
+			data: cities
+		});
+	} catch (error) {
+		return  res.status(500).json({
+			success: false,
+			message: 'The serve has error, it is not possible to bring the data',
+			error
+		});
+	}
+};
 
 exports.findLocation = async (req,res,next) => {
-    try {
-        const {q, latitude, longitude} = req.query;
+	try {
+		const data = await saveData(CitiesModel, dataCities)
 
-        let name = new RegExp(q, 'i') || new RegExp('.', 'i');
-        let latitud = new RegExp(latitude, 'i') || new RegExp('.', 'i');
-        let longitud =  new RegExp(longitude, 'i') || new RegExp('.', 'i');
+		const {q, latitude, longitude} = req.query;
 
-        const cities = await CitiesModel.find({name, latitude: latitud, longitude: longitud})
+		let name = new RegExp(q, 'i') || new RegExp('.', 'i');
+		let latitud = new RegExp(latitude, 'i') || new RegExp('.', 'i');
+		let longitud =  new RegExp(longitude, 'i') || new RegExp('.', 'i');
 
-        if (cities.length > 0) {
-            return res.status(200).json({
-                success: true,
-                count: cities.length,
-                data: cities
-            })
-        }
+		const cities = await CitiesModel.find({name, latitude: latitud, longitude: longitud});
 
-        return res.status(200).json({
-            success: true,
-            message: 'Nothing was found with that search',
-            data: cities
-        })
+		if (cities.length > 0) {
+			return res.status(200).json({
+				success: true,
+				count: cities.length,
+				data: cities
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: 'Nothing was found with that search',
+			data: cities
+		});
 
 
-    } catch (error) {
-        return  res.status(500).json({
-            success: false,
-            message: 'The serve has error, it is not possible to bring the data',
-            error
-        })
-    }
-}
+	} catch (error) {
+		return  res.status(500).json({
+			success: false,
+			message: 'The serve has error, it is not possible to bring the data',
+			error
+		});
+	}
+};

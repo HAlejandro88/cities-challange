@@ -1,12 +1,14 @@
 const express = require('express');
-const { findLocation } = require('../controllers/Cities.controller')
+const apicache = require('apicache');
+const { findLocation } = require('../controllers/Cities.controller');
 
-const router = express.Router()
+const router = express.Router();
 
+const cache = apicache.middleware;
 
 router.route('/')
-    .get(findLocation)
+	.get(cache('2 minutes'),findLocation);
 
 
 
-module.exports = router
+module.exports = router;
